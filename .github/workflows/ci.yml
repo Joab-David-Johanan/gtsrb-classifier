@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+
+      # uvx runs ruff without needing a virtual environment at all
+      - name: Ruff — check lint rules
+        run: uvx ruff check .
+
+      - name: Ruff — check formatting
+        run: uvx ruff format --check .
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python 3.11
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        # Override the cu130 PyTorch index with CPU-only builds for CI.
+        # GPU runners on GitHub Actions are expensive — CPU torch is enough
+        # to run unit tests and keeps CI fast and free.
+        run: uv sync --extra dev
+        env:
+          UV_INDEX_PYTORCH_CU130_URL: https://download.pytorch.org/whl/cpu
+
+      - name: Run tests
+        run: uv run pytest tests/ -v --tb=short

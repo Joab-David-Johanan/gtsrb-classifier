@@ -49,6 +49,7 @@ git push -u origin main
 ## GitHub Industry Practices
 
 ### 1. Branching Strategy
+- [x] Renamed default branch from `master` to `main`
 - [ ] Use trunk-based development — `main` is always deployable
 - [ ] Create short-lived feature branches, merge via PR
 - Branch naming convention:
@@ -57,6 +58,20 @@ feature/custom-dataset
 feature/training-loop
 fix/class-imbalance-sampler
 experiment/efficientnet-backbone
+```
+
+#### Commands to rename master → main
+```bash
+# 1. Rename locally
+git branch -m master main
+
+# 2. Push new main branch
+git push -u origin main
+
+# 3. On GitHub → Settings → General → Default branch → switch to main → Update
+
+# 4. Delete old master on remote (only works AFTER step 3)
+git push origin --delete master
 ```
 
 ### 2. Conventional Commits
@@ -75,13 +90,14 @@ docs: update config.yaml comments
   - Require status checks (CI) to pass
 
 ### 4. GitHub Actions CI
-- [ ] Create `.github/workflows/ci.yml`
+- [x] Created `.github/workflows/ci.yml`
   - Runs `ruff` linting on every push
   - Runs `pytest` on every push
   - Fails the PR if either fails
+  - Uses CPU-only PyTorch in CI (fast + free — no GPU runner needed)
 
 ### 5. PR Description Template
-- [ ] Create `.github/pull_request_template.md`
+- [x] Created `.github/pull_request_template.md`
 ```
 ## What does this PR do?
 
