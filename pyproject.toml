@@ -15,6 +15,7 @@ dependencies = [
     "pyyaml",
     "tqdm",
     "albumentations",
+    "loguru",
 ]
 
 [project.optional-dependencies]
