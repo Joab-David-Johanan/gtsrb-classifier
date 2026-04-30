@@ -1,0 +1,24 @@
+# Environment
+.venv/
+
+# Dataset & model artifacts (too large for git)
+data/
+checkpoints/
+logs/
+
+# Notebook outputs
+.ipynb_checkpoints/
+notebooks/*.png
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+.git

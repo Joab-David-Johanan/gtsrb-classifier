@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gtsrb-classifier"
+version = "0.1.0"
+description = "End-to-end GTSRB traffic sign classifier"
+requires-python = ">=3.11"
+dependencies = [
+    "torch",
+    "torchvision",
+    "numpy",
+    "pillow",
+    "pyyaml",
+    "tqdm",
+    "albumentations",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "matplotlib",
+    "jupyter",
+    "ipykernel",
+]
+serving = [
+    "fastapi",
+    "uvicorn[standard]",
+    "python-multipart",
+]
+tracking = [
+    "wandb",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu130" }
+torchvision = { index = "pytorch-cu130" }
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gtsrb"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
