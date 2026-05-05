@@ -9,16 +9,48 @@ from gtsrb.models.classifier import GTSRBClassifier
 from gtsrb.utils import CheckpointError, logger
 
 CLASS_NAMES = [
-    "Speed 20", "Speed 30", "Speed 50", "Speed 60", "Speed 70",
-    "Speed 80", "End Speed 80", "Speed 100", "Speed 120", "No passing",
-    "No passing >3.5t", "Right-of-way", "Priority road", "Yield", "Stop",
-    "No vehicles", "No vehicles >3.5t", "No entry", "General caution",
-    "Danger curve left", "Danger curve right", "Double curve", "Bumpy road",
-    "Slippery road", "Road narrows", "Road work", "Traffic signals",
-    "Pedestrians", "Children crossing", "Bicycles crossing",
-    "Beware ice/snow", "Wild animals", "End all limits", "Turn right ahead",
-    "Turn left ahead", "Ahead only", "Straight or right", "Straight or left",
-    "Keep right", "Keep left", "Roundabout", "End no passing",
+    "Speed 20",
+    "Speed 30",
+    "Speed 50",
+    "Speed 60",
+    "Speed 70",
+    "Speed 80",
+    "End Speed 80",
+    "Speed 100",
+    "Speed 120",
+    "No passing",
+    "No passing >3.5t",
+    "Right-of-way",
+    "Priority road",
+    "Yield",
+    "Stop",
+    "No vehicles",
+    "No vehicles >3.5t",
+    "No entry",
+    "General caution",
+    "Danger curve left",
+    "Danger curve right",
+    "Double curve",
+    "Bumpy road",
+    "Slippery road",
+    "Road narrows",
+    "Road work",
+    "Traffic signals",
+    "Pedestrians",
+    "Children crossing",
+    "Bicycles crossing",
+    "Beware ice/snow",
+    "Wild animals",
+    "End all limits",
+    "Turn right ahead",
+    "Turn left ahead",
+    "Ahead only",
+    "Straight or right",
+    "Straight or left",
+    "Keep right",
+    "Keep left",
+    "Roundabout",
+    "End no passing",
     "End no passing >3.5t",
 ]
 
@@ -79,7 +111,9 @@ def main() -> None:
             continue
         correct = (all_preds[mask] == all_labels[mask]).sum()
         acc = correct / mask.sum()
-        print(f"{CLASS_NAMES[class_id]:<30} {correct:>8} {mask.sum():>8} {acc * 100:>9.1f}%")
+        print(
+            f"{CLASS_NAMES[class_id]:<30} {correct:>8} {mask.sum():>8} {acc * 100:>9.1f}%"
+        )
 
 
 if __name__ == "__main__":
