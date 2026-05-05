@@ -1,4 +1,4 @@
-# PyTorch Image Classification — GTSRB
+# PyTorch Image Classification - GTSRB
 
 **Goal:** End-to-End PyTorch project application  
 **Dataset:** German Traffic Sign Recognition Benchmark (GTSRB)  
@@ -6,10 +6,10 @@
 
 ---
 
-## Step 1 — Project Setup
+## Step 1 - Project Setup
 - [x] Check if `uv` is installed: `uv --version`
 - [x] If not installed, run: `pip install uv`
-- [x] Created `pyproject.toml` — defines package, dependencies, and cu130 PyTorch index
+- [x] Created `pyproject.toml` - defines package, dependencies, and cu130 PyTorch index
 - [x] Run `uv sync` to create `.venv` and install dependencies
 - [x] Verify torch is installed: `uv pip show torch`
 
@@ -17,19 +17,19 @@
 
 | File / Folder | Reason |
 |---|---|
-| `pyproject.toml` | Single source of truth for the package — defines dependencies, build system, and optional groups (dev/serving/tracking). Replaces `requirements.txt`. Makes the project installable on any machine with `uv sync`. |
-| `configs/config.yaml` | Centralises all hyperparameters and paths. Nothing is hardcoded in Python files — changing a value here affects the whole project without touching code. |
-| `src/gtsrb/` | The installable package lives under `src/` so Python cannot accidentally import it without it being installed first — prevents subtle path bugs in production. |
-| `src/gtsrb/data/` | Will hold the custom `Dataset` class and augmentation pipeline — kept separate so data logic is never mixed with model or training logic. |
-| `src/gtsrb/models/` | Will hold the backbone + classification head definition — isolated so you can swap ResNet for EfficientNet without touching training code. |
-| `src/gtsrb/training/` | Will hold the training loop, loss functions, and scheduler logic — separated so the same trainer can be reused with different models or datasets. |
-| `src/gtsrb/serving/` | Will hold the FastAPI inference endpoint — completely decoupled from training so it can be deployed independently as a Docker container. |
-| `scripts/` | Entry-point scripts (`train.py`, `evaluate.py`) that wire config → model → trainer together. Kept thin — all real logic lives in `src/gtsrb/`. |
+| `pyproject.toml` | Single source of truth for the package - defines dependencies, build system, and optional groups (dev/serving/tracking). Replaces `requirements.txt`. Makes the project installable on any machine with `uv sync`. |
+| `configs/config.yaml` | Centralises all hyperparameters and paths. Nothing is hardcoded in Python files - changing a value here affects the whole project without touching code. |
+| `src/gtsrb/` | The installable package lives under `src/` so Python cannot accidentally import it without it being installed first - prevents subtle path bugs in production. |
+| `src/gtsrb/data/` | Will hold the custom `Dataset` class and augmentation pipeline - kept separate so data logic is never mixed with model or training logic. |
+| `src/gtsrb/models/` | Will hold the backbone + classification head definition - isolated so you can swap ResNet for EfficientNet without touching training code. |
+| `src/gtsrb/training/` | Will hold the training loop, loss functions, and scheduler logic - separated so the same trainer can be reused with different models or datasets. |
+| `src/gtsrb/serving/` | Will hold the FastAPI inference endpoint - completely decoupled from training so it can be deployed independently as a Docker container. |
+| `scripts/` | Entry-point scripts (`train.py`, `evaluate.py`) that wire config -> model -> trainer together. Kept thin - all real logic lives in `src/gtsrb/`. |
 | `tests/` | Unit and integration tests. Separating tests from source is standard packaging practice and required by most CI systems. |
 
 ## Version Control
-- [x] Created `.gitignore` — excludes `.venv/`, `data/`, `checkpoints/`, notebook outputs
-- [x] `uv.lock` is committed — pins exact dependency versions for reproducibility
+- [x] Created `.gitignore` - excludes `.venv/`, `data/`, `checkpoints/`, notebook outputs
+- [x] `uv.lock` is committed - pins exact dependency versions for reproducibility
 
 ### Commands
 ```bash
@@ -38,7 +38,7 @@ git init
 git add .
 git commit -m "initial project setup: pyproject.toml, directory structure, exploration notebook"
 
-# 2a. Create GitHub repo and push (requires gh CLI — cli.github.com)
+# 2a. Create GitHub repo and push (requires gh CLI - cli.github.com)
 gh repo create gtsrb-classifier --public --source=. --remote=origin --push
 
 # 2b. Or manually if no gh CLI
@@ -51,7 +51,7 @@ git push -u origin main
 
 ### 1. Branching Strategy
 - [x] Renamed default branch from `master` to `main`
-- [ ] Use trunk-based development — `main` is always deployable
+- [ ] Use trunk-based development - `main` is always deployable
 - [ ] Create short-lived feature branches, merge via PR
 - Branch naming convention:
 ```
@@ -61,7 +61,7 @@ fix/class-imbalance-sampler
 experiment/efficientnet-backbone
 ```
 
-#### Commands to rename master → main
+#### Commands to rename master -> main
 ```bash
 # 1. Rename locally
 git branch -m master main
@@ -69,7 +69,7 @@ git branch -m master main
 # 2. Push new main branch
 git push -u origin main
 
-# 3. On GitHub → Settings → General → Default branch → switch to main → Update
+# 3. On GitHub -> Settings -> General -> Default branch -> switch to main -> Update
 
 # 4. Delete old master on remote (only works AFTER step 3)
 git push origin --delete master
@@ -85,7 +85,7 @@ docs: update config.yaml comments
 ```
 
 ### 3. Branch Protection on `main`
-- [x] GitHub → Settings → Branches → Add rule:
+- [x] GitHub -> Settings -> Branches -> Add rule:
   - Require PR before merging
   - Require at least 1 review
   - Require status checks (CI) to pass
@@ -95,7 +95,7 @@ docs: update config.yaml comments
   - Runs `ruff` linting on every push
   - Runs `pytest` on every push
   - Fails the PR if either fails
-  - Uses CPU-only PyTorch in CI (fast + free — no GPU runner needed)
+  - Uses CPU-only PyTorch in CI (fast + free - no GPU runner needed)
 
 #### Steps to enable status checks in branch protection
 ```
@@ -106,9 +106,9 @@ docs: update config.yaml comments
 
 2. Wait for CI to run at least once (check the Actions tab on GitHub)
 
-3. Go to Settings → Branches → Add rule → Branch name: main
+3. Go to Settings -> Branches -> Add rule -> Branch name: main
    - Check: Require a pull request before merging
-   - Check: Require status checks to pass → search for "Lint" and "Test"
+   - Check: Require status checks to pass -> search for "Lint" and "Test"
      (they only appear after CI has run at least once)
    - Save
 ```
@@ -147,29 +147,29 @@ git commit -m "feat: add custom GTSRB dataset class (closes #1)"
 git push -u origin feature/data-pipeline
 gh pr create --title "feat: data pipeline" --body "Closes #1"
 
-# 5. CI runs automatically (lint + tests) — fix any failures before merging
+# 5. CI runs automatically (lint + tests) - fix any failures before merging
 
 # 6. Merge PR on GitHub using "Create a merge commit"
-#    (not squash/rebase — this gives you the branching lines in Git Graph)
+#    (not squash/rebase - this gives you the branching lines in Git Graph)
 
-# 7. Sync your local machine — GitHub merged in the cloud, your machine doesn't know yet
+# 7. Sync your local machine - GitHub merged in the cloud, your machine doesn't know yet
 git checkout main
 git pull
 # Issue auto-closes after this merge
 ```
 
 #### Why the workflow is designed this way
-- `main` is always production-ready — you never work directly on it
+- `main` is always production-ready - you never work directly on it
 - Issue = the "what" and "why" of the work, tracked permanently
 - Branch = isolated sandbox where you can break things safely without affecting main
 - PR = formal gate before anything touches main
 - CI = automated proof the code works before it merges
 - `git pull` after merging = your local machine and GitHub are two separate copies.
-  GitHub merged in the cloud — your machine had no idea. `git pull` downloads the merge.
+  GitHub merged in the cloud - your machine had no idea. `git pull` downloads the merge.
 
 #### Why the issue looks gone before merging
 GitHub links the issue to the PR the moment you write `closes #N` in the PR description.
-It may disappear from the Open list depending on your filter — but it only truly closes
+It may disappear from the Open list depending on your filter - but it only truly closes
 when the PR merges into main. Check the Closed tab to confirm.
 
 ### What to set up now vs later
@@ -183,9 +183,9 @@ when the PR merges into main. Check the Closed tab to confirm.
 
 ## Logging & Error Handling
 - [x] Added `loguru` to `pyproject.toml` core dependencies
-- [x] Created `src/gtsrb/utils/logger.py` — single loguru config imported everywhere
-- [x] Created `src/gtsrb/utils/exceptions.py` — custom exception hierarchy
-- [x] Created `src/gtsrb/utils/__init__.py` — exports logger and all exceptions
+- [x] Created `src/gtsrb/utils/logger.py` - single loguru config imported everywhere
+- [x] Created `src/gtsrb/utils/exceptions.py` - custom exception hierarchy
+- [x] Created `src/gtsrb/utils/__init__.py` - exports logger and all exceptions
 
 ### How to use in any file
 ```python
@@ -199,12 +199,12 @@ raise DatasetError("Class folder 00005 is empty")
 
 ### Exception hierarchy
 ```
-GtsrbError          ← base, catch-all
-├── DatasetError    ← data loading / processing
-├── ConfigError     ← missing or invalid config values
-├── CheckpointError ← saving / loading model weights
-├── ModelError      ← architecture or forward pass
-└── AugmentationError ← augmentation pipeline
+GtsrbError          <- base, catch-all
+├── DatasetError    <- data loading / processing
+├── ConfigError     <- missing or invalid config values
+├── CheckpointError <- saving / loading model weights
+├── ModelError      <- architecture or forward pass
+└── AugmentationError <- augmentation pipeline
 ```
 
 ### Log output format
@@ -214,11 +214,11 @@ GtsrbError          ← base, catch-all
 ```
 Logs also written to `logs/gtsrb.log` with 10 MB rotation and 7-day retention.
 
-## Step 2 — Data Pipeline
-- [x] Created `notebooks/01_explore_data.ipynb` — download dataset, inspect structure, plot class distribution, visualise samples, check image sizes
-- [x] Created `src/gtsrb/data/transforms.py` — train augmentations + val transforms
-- [x] Created `src/gtsrb/data/dataset.py` — custom Dataset class
-- [x] Created `src/gtsrb/data/dataloader.py` — DataLoader factory with WeightedRandomSampler
+## Step 2 - Data Pipeline
+- [x] Created `notebooks/01_explore_data.ipynb` - download dataset, inspect structure, plot class distribution, visualise samples, check image sizes
+- [x] Created `src/gtsrb/data/transforms.py` - train augmentations + val transforms
+- [x] Created `src/gtsrb/data/dataset.py` - custom Dataset class
+- [x] Created `src/gtsrb/data/dataloader.py` - DataLoader factory with WeightedRandomSampler
 
 ### To run the notebook
 ```bash
@@ -229,64 +229,64 @@ jupyter notebook notebooks/01_explore_data.ipynb
 ### Key concepts in the data pipeline
 
 **transforms.py**
-- Train: heavy augmentations (blur, brightness, perspective, rotation) — teaches model to handle real-world variation
-- Val: only resize + normalize — keeps evaluation metrics consistent and comparable across epochs
+- Train: heavy augmentations (blur, brightness, perspective, rotation) - teaches model to handle real-world variation
+- Val: only resize + normalize - keeps evaluation metrics consistent and comparable across epochs
 
 **dataset.py**
-- Stores only `(path, label)` pairs at init — images loaded lazily in `__getitem__` to avoid RAM overflow
+- Stores only `(path, label)` pairs at init - images loaded lazily in `__getitem__` to avoid RAM overflow
 - `image.convert("RGB")` guards against rare grayscale images breaking the pipeline
-- `get_class_counts()` returns per-class image counts — used by DataLoader to fix imbalance
+- `get_class_counts()` returns per-class image counts - used by DataLoader to fix imbalance
 
 **dataloader.py**
-- `WeightedRandomSampler` replaces `shuffle=True` for training — gives rare classes equal chance of appearing in each batch
-- `pin_memory=True` pre-loads batches into pinned RAM for faster CPU→GPU transfer
+- `WeightedRandomSampler` replaces `shuffle=True` for training - gives rare classes equal chance of appearing in each batch
+- `pin_memory=True` pre-loads batches into pinned RAM for faster CPU->GPU transfer
 
-## Step 3 — Model
-- [x] Created `src/gtsrb/models/classifier.py` — ResNet50 backbone + custom classification head
+## Step 3 - Model
+- [x] Created `src/gtsrb/models/classifier.py` - ResNet50 backbone + custom classification head
 
 ### Key concepts
 
 **Why replace only the final layer?**
 ResNet50 was trained on 1000 ImageNet classes. We keep all learned visual features
-(edges, textures, shapes) and only swap the final layer from 1000 → 43 classes.
+(edges, textures, shapes) and only swap the final layer from 1000 -> 43 classes.
 
-**Custom head: `Linear(2048→512) → BatchNorm → ReLU → Dropout → Linear(512→43)`**
-- `BatchNorm1d` — stabilises training, reduces sensitivity to learning rate
-- `ReLU` — non-linearity so the head can learn complex patterns
-- `Dropout(0.3)` — prevents overfitting on the small GTSRB head
+**Custom head: `Linear(2048->512) -> BatchNorm -> ReLU -> Dropout -> Linear(512->43)`**
+- `BatchNorm1d` - stabilises training, reduces sensitivity to learning rate
+- `ReLU` - non-linearity so the head can learn complex patterns
+- `Dropout(0.3)` - prevents overfitting on the small GTSRB head
 
-**Fine-tuning strategy — two phases:**
-1. `model.freeze_backbone()` — train only the head for a few epochs (fast, stable)
-2. `model.unfreeze_backbone()` — fine-tune all layers at a low learning rate (extra accuracy)
+**Fine-tuning strategy - two phases:**
+1. `model.freeze_backbone()` - train only the head for a few epochs (fast, stable)
+2. `model.unfreeze_backbone()` - fine-tune all layers at a low learning rate (extra accuracy)
 
 ### Commit commands
 ```bash
 git add src/gtsrb/models/classifier.py PROGRESS.md
 git commit -m "feat: add ResNet50 classifier with custom head (closes #2)"
 git push -u origin feature/model
-gh pr create --title "feat: model — ResNet50 backbone and classification head" --body "Closes #2"
+gh pr create --title "feat: model - ResNet50 backbone and classification head" --body "Closes #2"
 ```
-After CI passes → merge PR → `git checkout main && git pull`
+After CI passes -> merge PR -> `git checkout main && git pull`
 
-## Step 4 — Training & Evaluation
-- [x] Created `src/gtsrb/training/losses.py` — Focal loss (down-weights easy examples, focuses on hard ones)
-- [x] Created `src/gtsrb/training/trainer.py` — two-phase training loop with mixed precision, grad clipping, checkpointing
-- [x] Created `scripts/train.py` — entry point: config → data → model → trainer
-- [x] Created `scripts/evaluate.py` — loads best checkpoint, prints per-class accuracy on test set
+## Step 4 - Training & Evaluation
+- [x] Created `src/gtsrb/training/losses.py` - Focal loss (down-weights easy examples, focuses on hard ones)
+- [x] Created `src/gtsrb/training/trainer.py` - two-phase training loop with mixed precision, grad clipping, checkpointing
+- [x] Created `scripts/train.py` - entry point: config -> data -> model -> trainer
+- [x] Created `scripts/evaluate.py` - loads best checkpoint, prints per-class accuracy on test set
 
 ### Key concepts
 
-**Focal loss** — standard cross-entropy weighted by `(1 - p_t)^gamma`. Easy examples get low weight, hard misclassified ones get high weight. Works on top of WeightedRandomSampler for double imbalance protection.
+**Focal loss** - standard cross-entropy weighted by `(1 - p_t)^gamma`. Easy examples get low weight, hard misclassified ones get high weight. Works on top of WeightedRandomSampler for double imbalance protection.
 
 **Two-phase training:**
-1. Phase 1 (5 epochs) — backbone frozen, only head trains. Fast and stable — prevents destroying pretrained weights early on.
-2. Phase 2 (remaining epochs) — all layers unfrozen at lr/10. Squeezes out extra accuracy by fine-tuning the backbone features to GTSRB specifically.
+1. Phase 1 (5 epochs) - backbone frozen, only head trains. Fast and stable - prevents destroying pretrained weights early on.
+2. Phase 2 (remaining epochs) - all layers unfrozen at lr/10. Squeezes out extra accuracy by fine-tuning the backbone features to GTSRB specifically.
 
-**Mixed precision (`torch.amp`)** — computes forward/backward pass in float16, keeps master weights in float32. ~2x speedup on modern GPUs with no accuracy loss.
+**Mixed precision (`torch.amp`)** - computes forward/backward pass in float16, keeps master weights in float32. ~2x speedup on modern GPUs with no accuracy loss.
 
-**Gradient clipping** — caps gradient norm at `grad_clip=1.0`. Prevents exploding gradients when backbone is unfrozen.
+**Gradient clipping** - caps gradient norm at `grad_clip=1.0`. Prevents exploding gradients when backbone is unfrozen.
 
-**OneCycleLR** — learning rate starts low, peaks at `max_lr`, then decays. Trains faster and generalises better than a flat lr.
+**OneCycleLR** - learning rate starts low, peaks at `max_lr`, then decays. Trains faster and generalises better than a flat lr.
 
 ### How to run
 ```bash
@@ -304,4 +304,41 @@ git commit -m "feat: add training loop and evaluation script (closes #4)"
 git push -u origin feature/training
 gh pr create --title "feat: training loop and evaluation" --body "Closes #4"
 ```
-After CI passes → merge PR → `git checkout main && git pull`
+After CI passes -> merge PR -> `git checkout main && git pull`
+
+## Pre-commit Hooks
+- [x] Added `pre-commit` to dev dependencies in `pyproject.toml`
+- [x] Created `.pre-commit-config.yaml`
+
+### What each hook does
+
+| Hook | What it catches |
+|---|---|
+| `ruff - lint` | Code style violations, unused imports, bad patterns - auto-fixes where possible |
+| `ruff - format` | Inconsistent formatting - auto-formats the file |
+| `trailing-whitespace` | Trailing spaces at end of lines |
+| `end-of-file-fixer` | Missing newline at end of file |
+| `check-yaml` | Invalid YAML syntax (catches broken config.yaml) |
+| `check-toml` | Invalid TOML syntax (catches broken pyproject.toml) |
+| `check-merge-conflict` | Accidentally committed merge markers |
+| `detect-private-key` | Accidentally committed API keys or private keys |
+| `check-added-large-files` | Files over 500kb - prevents committing dataset or model weights |
+
+### Why hooks and CI both exist
+- Hooks run locally in seconds - catch issues before they leave your machine
+- CI runs in the cloud on every push - catches issues that slipped through
+- Together: hooks are the first line of defence, CI is the safety net
+
+### Setup commands (run once per machine)
+```bash
+uv sync --extra dev
+uv run pre-commit install
+```
+
+### Test all hooks on all files
+```bash
+uv run pre-commit run --all-files
+```
+
+From now on every `git commit` runs all hooks automatically.
+If any fail the commit is blocked until fixed.

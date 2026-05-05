@@ -25,6 +25,7 @@ dev = [
     "matplotlib",
     "jupyter",
     "ipykernel",
+    "pre-commit",
 ]
 serving = [
     "fastapi",

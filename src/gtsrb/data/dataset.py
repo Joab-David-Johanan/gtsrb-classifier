@@ -64,8 +64,9 @@ class GTSRBDataset(Dataset):
                 self.samples.append((img_path, class_id))
 
     def _load_test_samples(self) -> None:
-        csv_path = self.root / "GTSRB" / "Final_Test" / "Images" / "GT-final_test.csv"
-        test_root = csv_path.parent
+        # The root-level CSV has ClassId; the one inside Images/ does not
+        csv_path = self.root / "GT-final_test.csv"
+        test_root = self.root / "GTSRB" / "Final_Test" / "Images"
 
         if not csv_path.exists():
             raise DatasetError(f"Test labels CSV not found: {csv_path}")
