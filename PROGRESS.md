@@ -139,14 +139,38 @@ gh issue create --title "feat: data pipeline" --body "Build custom Dataset, Data
 # 2. Create a branch named after the feature
 git checkout -b feature/data-pipeline
 
-# 3. Commit messages reference the issue number
+# 3. Write code, then commit referencing the issue number
 git commit -m "feat: add custom GTSRB dataset class (closes #1)"
-# Using "closes #N" auto-closes the issue when the PR merges to main
+# "closes #N" auto-closes the issue when the PR merges to main
 
 # 4. Push the branch and open a PR
 git push -u origin feature/data-pipeline
 gh pr create --title "feat: data pipeline" --body "Closes #1"
+
+# 5. CI runs automatically (lint + tests) — fix any failures before merging
+
+# 6. Merge PR on GitHub using "Create a merge commit"
+#    (not squash/rebase — this gives you the branching lines in Git Graph)
+
+# 7. Sync your local machine — GitHub merged in the cloud, your machine doesn't know yet
+git checkout main
+git pull
+# Issue auto-closes after this merge
 ```
+
+#### Why the workflow is designed this way
+- `main` is always production-ready — you never work directly on it
+- Issue = the "what" and "why" of the work, tracked permanently
+- Branch = isolated sandbox where you can break things safely without affecting main
+- PR = formal gate before anything touches main
+- CI = automated proof the code works before it merges
+- `git pull` after merging = your local machine and GitHub are two separate copies.
+  GitHub merged in the cloud — your machine had no idea. `git pull` downloads the merge.
+
+#### Why the issue looks gone before merging
+GitHub links the issue to the PR the moment you write `closes #N` in the PR description.
+It may disappear from the Open list depending on your filter — but it only truly closes
+when the PR merges into main. Check the Closed tab to confirm.
 
 ### What to set up now vs later
 
@@ -216,3 +240,30 @@ jupyter notebook notebooks/01_explore_data.ipynb
 **dataloader.py**
 - `WeightedRandomSampler` replaces `shuffle=True` for training — gives rare classes equal chance of appearing in each batch
 - `pin_memory=True` pre-loads batches into pinned RAM for faster CPU→GPU transfer
+
+## Step 3 — Model
+- [x] Created `src/gtsrb/models/classifier.py` — ResNet50 backbone + custom classification head
+
+### Key concepts
+
+**Why replace only the final layer?**
+ResNet50 was trained on 1000 ImageNet classes. We keep all learned visual features
+(edges, textures, shapes) and only swap the final layer from 1000 → 43 classes.
+
+**Custom head: `Linear(2048→512) → BatchNorm → ReLU → Dropout → Linear(512→43)`**
+- `BatchNorm1d` — stabilises training, reduces sensitivity to learning rate
+- `ReLU` — non-linearity so the head can learn complex patterns
+- `Dropout(0.3)` — prevents overfitting on the small GTSRB head
+
+**Fine-tuning strategy — two phases:**
+1. `model.freeze_backbone()` — train only the head for a few epochs (fast, stable)
+2. `model.unfreeze_backbone()` — fine-tune all layers at a low learning rate (extra accuracy)
+
+### Commit commands
+```bash
+git add src/gtsrb/models/classifier.py PROGRESS.md
+git commit -m "feat: add ResNet50 classifier with custom head (closes #2)"
+git push -u origin feature/model
+gh pr create --title "feat: model — ResNet50 backbone and classification head" --body "Closes #2"
+```
+After CI passes → merge PR → `git checkout main && git pull`
