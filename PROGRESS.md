@@ -267,3 +267,41 @@ git push -u origin feature/model
 gh pr create --title "feat: model — ResNet50 backbone and classification head" --body "Closes #2"
 ```
 After CI passes → merge PR → `git checkout main && git pull`
+
+## Step 4 — Training & Evaluation
+- [x] Created `src/gtsrb/training/losses.py` — Focal loss (down-weights easy examples, focuses on hard ones)
+- [x] Created `src/gtsrb/training/trainer.py` — two-phase training loop with mixed precision, grad clipping, checkpointing
+- [x] Created `scripts/train.py` — entry point: config → data → model → trainer
+- [x] Created `scripts/evaluate.py` — loads best checkpoint, prints per-class accuracy on test set
+
+### Key concepts
+
+**Focal loss** — standard cross-entropy weighted by `(1 - p_t)^gamma`. Easy examples get low weight, hard misclassified ones get high weight. Works on top of WeightedRandomSampler for double imbalance protection.
+
+**Two-phase training:**
+1. Phase 1 (5 epochs) — backbone frozen, only head trains. Fast and stable — prevents destroying pretrained weights early on.
+2. Phase 2 (remaining epochs) — all layers unfrozen at lr/10. Squeezes out extra accuracy by fine-tuning the backbone features to GTSRB specifically.
+
+**Mixed precision (`torch.amp`)** — computes forward/backward pass in float16, keeps master weights in float32. ~2x speedup on modern GPUs with no accuracy loss.
+
+**Gradient clipping** — caps gradient norm at `grad_clip=1.0`. Prevents exploding gradients when backbone is unfrozen.
+
+**OneCycleLR** — learning rate starts low, peaks at `max_lr`, then decays. Trains faster and generalises better than a flat lr.
+
+### How to run
+```bash
+# Train (downloads weights, runs 30 epochs, saves best checkpoint)
+uv run python scripts/train.py
+
+# Evaluate best checkpoint on test set
+uv run python scripts/evaluate.py
+```
+
+### Commit commands
+```bash
+git add src/gtsrb/training/ scripts/ PROGRESS.md
+git commit -m "feat: add training loop and evaluation script (closes #4)"
+git push -u origin feature/training
+gh pr create --title "feat: training loop and evaluation" --body "Closes #4"
+```
+After CI passes → merge PR → `git checkout main && git pull`
