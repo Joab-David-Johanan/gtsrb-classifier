@@ -2,7 +2,7 @@
 .venv/
 
 # Dataset & model artifacts (too large for git)
-data/
+/data/
 checkpoints/
 logs/
 
