@@ -11,6 +11,7 @@
 - [x] If not installed, run: `pip install uv`
 - [x] Created `pyproject.toml` — defines package, dependencies, and cu130 PyTorch index
 - [x] Run `uv sync` to create `.venv` and install dependencies
+- [x] Verify torch is installed: `uv pip show torch`
 
 ### Files Created & Why
 
@@ -84,7 +85,7 @@ docs: update config.yaml comments
 ```
 
 ### 3. Branch Protection on `main`
-- [ ] GitHub → Settings → Branches → Add rule:
+- [x] GitHub → Settings → Branches → Add rule:
   - Require PR before merging
   - Require at least 1 review
   - Require status checks (CI) to pass
@@ -95,6 +96,22 @@ docs: update config.yaml comments
   - Runs `pytest` on every push
   - Fails the PR if either fails
   - Uses CPU-only PyTorch in CI (fast + free — no GPU runner needed)
+
+#### Steps to enable status checks in branch protection
+```
+1. Commit and push .github/workflows/ci.yml to main first
+   git add .github/ PROGRESS.md
+   git commit -m "ci: add GitHub Actions workflow and PR template"
+   git push
+
+2. Wait for CI to run at least once (check the Actions tab on GitHub)
+
+3. Go to Settings → Branches → Add rule → Branch name: main
+   - Check: Require a pull request before merging
+   - Check: Require status checks to pass → search for "Lint" and "Test"
+     (they only appear after CI has run at least once)
+   - Save
+```
 
 ### 5. PR Description Template
 - [x] Created `.github/pull_request_template.md`
@@ -109,10 +126,26 @@ docs: update config.yaml comments
 ```
 
 ### 6. GitHub Issues + Labels
-- [ ] Open an issue for every feature before starting work
-- [ ] Reference the issue in the commit to auto-close it on merge:
-```
-git commit -m "feat: add dataset class (closes #3)"
+- [x] Open an issue for every feature before starting work
+- [x] Label it (e.g. `enhancement`, `bug`, `documentation`)
+- [x] Reference the issue in commits to auto-close it when PR merges
+
+#### Full workflow for every new feature
+```bash
+# 1. Open issue on GitHub (website or CLI)
+gh issue create --title "feat: data pipeline" --body "Build custom Dataset, DataLoader, and augmentation pipeline"
+# GitHub assigns it a number e.g. #1
+
+# 2. Create a branch named after the feature
+git checkout -b feature/data-pipeline
+
+# 3. Commit messages reference the issue number
+git commit -m "feat: add custom GTSRB dataset class (closes #1)"
+# Using "closes #N" auto-closes the issue when the PR merges to main
+
+# 4. Push the branch and open a PR
+git push -u origin feature/data-pipeline
+gh pr create --title "feat: data pipeline" --body "Closes #1"
 ```
 
 ### What to set up now vs later
@@ -159,9 +192,27 @@ Logs also written to `logs/gtsrb.log` with 10 MB rotation and 7-day retention.
 
 ## Step 2 — Data Pipeline
 - [x] Created `notebooks/01_explore_data.ipynb` — download dataset, inspect structure, plot class distribution, visualise samples, check image sizes
+- [x] Created `src/gtsrb/data/transforms.py` — train augmentations + val transforms
+- [x] Created `src/gtsrb/data/dataset.py` — custom Dataset class
+- [x] Created `src/gtsrb/data/dataloader.py` — DataLoader factory with WeightedRandomSampler
 
 ### To run the notebook
 ```bash
 uv sync --extra dev     # installs matplotlib, jupyter, ipykernel
 jupyter notebook notebooks/01_explore_data.ipynb
 ```
+
+### Key concepts in the data pipeline
+
+**transforms.py**
+- Train: heavy augmentations (blur, brightness, perspective, rotation) — teaches model to handle real-world variation
+- Val: only resize + normalize — keeps evaluation metrics consistent and comparable across epochs
+
+**dataset.py**
+- Stores only `(path, label)` pairs at init — images loaded lazily in `__getitem__` to avoid RAM overflow
+- `image.convert("RGB")` guards against rare grayscale images breaking the pipeline
+- `get_class_counts()` returns per-class image counts — used by DataLoader to fix imbalance
+
+**dataloader.py**
+- `WeightedRandomSampler` replaces `shuffle=True` for training — gives rare classes equal chance of appearing in each batch
+- `pin_memory=True` pre-loads batches into pinned RAM for faster CPU→GPU transfer
